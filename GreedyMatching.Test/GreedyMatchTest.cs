@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using GreedyMatching;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace GreedyMatching.Test
 {
@@ -25,7 +26,7 @@ namespace GreedyMatching.Test
 
 
         [TestMethod]
-        public void Test_InValid_Fragments()
+        public void Test_NonOverlapping_Fragments()
         {
             var fragments = new List<string>
             {
@@ -34,7 +35,9 @@ namespace GreedyMatching.Test
             };
 
             var result = GreedyMatch.GetMergedFragments(fragments);
-            Assert.AreEqual("[Error]: Cannot merge fragments.", result);
+            var success = result.Equals("ends wellall is well", StringComparison.OrdinalIgnoreCase) || result.Equals("all is wellends well", StringComparison.OrdinalIgnoreCase);
+
+            Assert.IsTrue(success, $"Expected 'ends wellall is well' or 'all is wellends well', actual '{result}'");
         }
 
         [TestMethod]
@@ -43,7 +46,7 @@ namespace GreedyMatching.Test
             var fragments = new List<string>();
 
             var result = GreedyMatch.GetMergedFragments(fragments);
-            Assert.AreEqual("[Error]: No fragments found.", result);
+            Assert.AreEqual(string.Empty, result);
         }
 
         [TestMethod]
@@ -93,6 +96,24 @@ namespace GreedyMatching.Test
             var result = GreedyMatch.GetMergedFragments(fragments);
             Assert.AreEqual("the quick brown fox jumps over the lazy dog", result);
         }
+
+        /*
+         [TestMethod]
+
+        public void Aderant_Standard_Test() {
+
+ 
+
+            var fragments = "m quaerat voluptatem.;pora incidunt ut labore et d;, consectetur, adipisci velit;olore magnam aliqua;idunt ut labore et dolore magn;uptatem.;i dolorem ipsum qu;iquam quaerat vol;psum quia dolor sit amet, consectetur, a;ia dolor sit amet, conse;squam est, qui do;Neque porro quisquam est, qu;aerat voluptatem.;m eius modi tem;Neque porro qui;, sed quia non numquam ei;lorem ipsum quia dolor sit amet;ctetur, adipisci velit, sed quia non numq;unt ut labore et dolore magnam aliquam qu;dipisci velit, sed quia non numqua;us modi tempora incid;Neque porro quisquam est, qui dolorem i;uam eius modi tem;pora inc;am al"
+
+                .Split(';').ToList();
+
+            var result = GreedyMatch.GetMergedFragments(fragments);
+
+            Assert.AreEqual("Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.", result);
+
+        }
+        */
 
     }
 }
