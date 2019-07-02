@@ -79,23 +79,38 @@ namespace GreedyMatching.Test
             Assert.IsTrue(result.Count == 1 && result.Contains("all is well that ends well"));
         }
 
-        /*
-         [TestMethod]
 
-        public void Aderant_Standard_Test() {
+        [TestMethod]
 
- 
-
+        public void Aderant_Standard_Test()
+        {
             var fragments = "m quaerat voluptatem.;pora incidunt ut labore et d;, consectetur, adipisci velit;olore magnam aliqua;idunt ut labore et dolore magn;uptatem.;i dolorem ipsum qu;iquam quaerat vol;psum quia dolor sit amet, consectetur, a;ia dolor sit amet, conse;squam est, qui do;Neque porro quisquam est, qu;aerat voluptatem.;m eius modi tem;Neque porro qui;, sed quia non numquam ei;lorem ipsum quia dolor sit amet;ctetur, adipisci velit, sed quia non numq;unt ut labore et dolore magnam aliquam qu;dipisci velit, sed quia non numqua;us modi tempora incid;Neque porro quisquam est, qui dolorem i;uam eius modi tem;pora inc;am al"
 
                 .Split(';').ToList();
 
             var result = GreedyMatch.GetMergedFragments(fragments);
 
-            Assert.AreEqual("Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.", result);
+            Assert.IsTrue(result.Count() == 1 && result.Contains("Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.".ToLower()));
 
         }
-        */
+
+        [TestMethod]
+        public void Test_Multiple_Results()
+        {
+            var fragments = new List<string>
+            {
+                "abc",
+                "def",
+                "ghi"
+            };
+
+            var result = GreedyMatch.GetMergedFragments(fragments);
+            Assert.IsTrue(result.Contains("abcghidef") 
+                        && result.Contains("defabcghi") 
+                        && result.Contains("defghiabc") 
+                        && result.Contains("ghiabcdef") 
+                        && result.Contains("ghidefabc") );
+        }
 
     }
 }

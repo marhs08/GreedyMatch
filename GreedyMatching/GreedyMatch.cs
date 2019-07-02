@@ -13,40 +13,29 @@ namespace GreedyMatching
         static void Main(string[] args)
         {
 
-            var fragments = "m quaerat voluptatem.;pora incidunt ut labore et d;, consectetur, adipisci velit;olore magnam aliqua;idunt ut labore et dolore magn;uptatem.;i dolorem ipsum qu;iquam quaerat vol;psum quia dolor sit amet, consectetur, a;ia dolor sit amet, conse;squam est, qui do;Neque porro quisquam est, qu;aerat voluptatem.;m eius modi tem;Neque porro qui;, sed quia non numquam ei;lorem ipsum quia dolor sit amet;ctetur, adipisci velit, sed quia non numq;unt ut labore et dolore magnam aliquam qu;dipisci velit, sed quia non numqua;us modi tempora incid;Neque porro quisquam est, qui dolorem i;uam eius modi tem;pora inc;am al"
+            //var fragments = "m quaerat voluptatem.;pora incidunt ut labore et d;, consectetur, adipisci velit;olore magnam aliqua;idunt ut labore et dolore magn;uptatem.;i dolorem ipsum qu;iquam quaerat vol;psum quia dolor sit amet, consectetur, a;ia dolor sit amet, conse;squam est, qui do;Neque porro quisquam est, qu;aerat voluptatem.;m eius modi tem;Neque porro qui;, sed quia non numquam ei;lorem ipsum quia dolor sit amet;ctetur, adipisci velit, sed quia non numq;unt ut labore et dolore magnam aliquam qu;dipisci velit, sed quia non numqua;us modi tempora incid;Neque porro quisquam est, qui dolorem i;uam eius modi tem;pora inc;am al".Split(';').ToList();
 
-             .Split(';').ToList();
             //var fragments = new List<string>
             //{
-            //"all is well",
-            //"ell that en",
-            //"hat end",
-            //"t ends well"
-            //    //"all is well",
-            //    //"WELL THAT EN",
-            //    //"hat end",
-            //    //"T ends Well"
-
-            //"all is well",
-            //    "ends well"
-
-            //"abc",
-            //"def",
-            //"ghi"
-
-            //  "all is well",
-            //"all is well"
+            //    "all is well",
+            //    "ell that en",
+            //    "hat end",
+            //    "t ends well"
             //};
 
-
-            //var fragments = new List<string> {
-            //"m quaerat voluptatem.","pora incidunt ut labore et d",", consectetur, adipisci velit","olore magnam aliqua","idunt ut labore et dolore magn","uptatem.","i dolorem ipsum qu","iquam quaerat vol","psum quia dolor sit amet, consectetur, a","ia dolor sit amet, conse","squam est, qui do","Neque porro quisquam est, qu","aerat voluptatem.","m eius modi tem","Neque porro qui",", sed quia non numquam ei","lorem ipsum quia dolor sit amet","ctetur, adipisci velit, sed quia non numq","unt ut labore et dolore magnam aliquam qu","dipisci velit, sed quia non numqua","us modi tempora incid","Neque porro quisquam est, qui dolorem i","uam eius modi tem","pora inc","am al"};
+            var fragments = new List<string>
+            {
+                "abc",
+                "def",
+                "ghi"
+            };
 
             var mergedResult = GetMergedFragments(fragments);
             Console.WriteLine("Below are the result/s:");
             foreach (var result in mergedResult)
             {
                 Console.WriteLine(result);
+                Console.WriteLine("--------");
             }
             Console.ReadLine();
         }
@@ -57,33 +46,62 @@ namespace GreedyMatching
             _matchingHelper = new MatchingHelper();
             _results = new List<string>();
 
+            string tmpMergedValue = string.Empty;
+            string tmpVal1 = string.Empty;
+            string tmpVal2 = string.Empty;
+
+            int tmpMergedLength = 0;
+
             if (fragments.Count > 0)
             {
                 while (fragments.Count > 1)
                 {
-                    int[] overlappedLength = GetOverlappedLengths(fragments);
-                    var nonOverlappingFragments = overlappedLength.Where(fl => fl == 0).Count();
-
-                    if (nonOverlappingFragments == overlappedLength.Count())
+                    tmpMergedValue = string.Empty;
+                    tmpMergedLength = 0;
+                    tmpVal1 = string.Empty;
+                    tmpVal2 = string.Empty;
+                    
+                    for (var ctr = 0; ctr < fragments.Count; ctr++)
+                    {
+                        for (var itr = 0; itr < fragments.Count; itr++)
+                        {
+                            if(ctr != itr)
+                            {
+                              var overlappedLength = _matchingHelper.GetOverlappedStringLength(fragments[ctr], fragments[itr]);
+                              if(overlappedLength > tmpMergedLength)
+                                {
+                                    tmpMergedLength = overlappedLength;
+                                    tmpMergedValue = _matchingHelper.ConcatWithOverlapping(fragments[ctr], fragments[itr]);
+                                    tmpVal1 = fragments[ctr];
+                                    tmpVal2 = fragments[itr];
+                                }
+                              else if(fragments[ctr].Contains(fragments[itr]))
+                                {
+                                    tmpMergedLength = fragments[itr].Length ;
+                                    tmpMergedValue = fragments[ctr];
+                                    tmpVal1 = fragments[ctr];
+                                    tmpVal2 = fragments[itr];
+                                }
+                            }
+                        }
+                    }        
+                    if(string.IsNullOrEmpty(tmpVal1) && string.IsNullOrEmpty(tmpVal2))
+                    {
+                        GetVariations(fragments.ToArray(), 0, fragments.Count - 1);
                         break;
+                    }
+                    else
+                    {
+                        fragments.Remove(tmpVal1);
+                        fragments.Remove(tmpVal2);
+                        fragments.Add(tmpMergedValue);
+                    }
 
-                    var maxMatchedValue = overlappedLength.Max();
-                    var maxMatchedIndex = overlappedLength.ToList().IndexOf(maxMatchedValue);
-
-                    var newValue = _matchingHelper.ConcatWithOverlapping(fragments[maxMatchedIndex], fragments[maxMatchedIndex + 1]);
-                    fragments[maxMatchedIndex] = newValue;
-                    fragments.RemoveAt(maxMatchedIndex + 1);
                 }
 
                 if (fragments.Count() == 1)
                 {
                     _results.Add(fragments.First());
-                }
-                else
-                {
-                    GetVariations(fragments.ToArray(), 0, fragments.Count - 1);
-
-
                 }
             }
             return _results;
